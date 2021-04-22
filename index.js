@@ -37,6 +37,9 @@ app.post('/register', (req, res) => {
     // client request with information for Sign Up.
 
     const user = new Users(req.body);
+
+    // save 전에 암호화 필요.
+
     user.save((err, userInfo) => { // mongoDB method.
         if(err) return res.json({ success : false, err });
         return res.status(200).json({ success : true });
