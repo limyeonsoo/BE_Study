@@ -4,6 +4,8 @@ const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 
+const {auth} = require('./middleware/auth');
+
 const app = express()
 const port = 4000
 
@@ -36,7 +38,7 @@ app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 
-app.post('/register', (req, res) => {
+app.post('/api/users/register', (req, res) => {
     // client request with information for Sign Up.
 
     const user = new Users(req.body);
@@ -72,6 +74,20 @@ app.post('/api/users/login', (req, res) => {
                 .json({loginSuccess : true, userId : user._Id});
             })
         })
+    })
+})
+
+app.get('/api/users/auth', auth , (req, res) => {
+    // auth : middleware 를 거친 후.
+    res.status(200).json({
+        _id: req.user._id,
+        isAdmin: req.user.role === 0?false : true,
+        isAuth:true,
+        email:req.user.email,
+        name:req.user.name,
+        lastname:req.user.lastname,
+        role:req.user.role,
+        image:req.user.image
     })
 })
 
