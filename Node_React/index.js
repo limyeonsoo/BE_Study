@@ -2,6 +2,8 @@ const express = require('express');
 const path = require('path');
 const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+
 const app = express()
 const port = 4000
 
@@ -29,6 +31,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 // For application/json
 app.use(bodyParser.json());
 
+app.use(cookieParser());
 app.get('/', (req, res) => {
   res.send('Hello World!')
 })
@@ -38,12 +41,38 @@ app.post('/register', (req, res) => {
 
     const user = new Users(req.body);
 
-    // save 전에 암호화 필요.
-
     user.save((err, userInfo) => { // mongoDB method.
         if(err) return res.json({ success : false, err });
         return res.status(200).json({ success : true });
     });
+})
+
+app.post('/api/users/login', (req, res) => {
+    Users.findOne({email: req.body.email}, (err, user) => {
+        console.log('user : ', user);
+        if(!user) return res.json({
+            loginSuccess: false,
+            message: "Invalid Email"
+        })
+        // save 전에 암호화 필요.
+        user.comparePassword(req.body.password, (err, isMatch) => {
+            if(!isMatch)
+                return res.json({
+                    loginSuccess:false,
+                    messgage:"Incorrect Password"
+                })
+            
+            // password가 일치 했으니, Token 생성하기.
+            user.generateToken((err, user) => {
+                if(err) return res.status(400).send(err);
+
+                // Store Token   1. cookie  2. localStorage
+                res.cookie("x_auth", user.token)
+                .status(200)
+                .json({loginSuccess : true, userId : user._Id});
+            })
+        })
+    })
 })
 
 app.listen(port, () => {
