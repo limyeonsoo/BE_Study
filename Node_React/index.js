@@ -18,6 +18,7 @@ dotenv.config({
 
 const mongoose = require('mongoose');
 const { Users } = require('./models/Users');
+const { reset } = require('nodemon');
 
 mongoose.connect(`mongodb+srv://${process.env.DBID}:${process.env.DBPW}@madgo.nvzw2.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`, {
     // connect option  
@@ -89,6 +90,20 @@ app.get('/api/users/auth', auth , (req, res) => {
         role:req.user.role,
         image:req.user.image
     })
+})
+
+app.get('/api/users/logout', auth, (req, res) => {
+
+    Users.findOneAndUpdate({
+        _id:req.user._id}, 
+        {token:""}, 
+        (err, user) => {
+            if(err) return res.json({success:false, err});
+            return res.status(200).send({
+                success:true
+            })
+        }
+    )
 })
 
 app.listen(port, () => {
