@@ -38,7 +38,9 @@ app.use(cookieParser());
 app.get('/', (req, res) => {
   res.send('Hello World!')
 })
-
+app.get('/api/hello', (req, res) => {
+    res.send('hello word');
+})
 app.post('/api/users/register', (req, res) => {
     // client request with information for Sign Up.
 
