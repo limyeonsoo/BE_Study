@@ -27,7 +27,7 @@ mongoose.connect(`mongodb+srv://${process.env.DBID}:${process.env.DBPW}@madgo.nv
     useCreateIndex : true,
     useFindAndModify: false
 }).then(() => console.log("MongoDB Connected!!!"))
-.catch(err => console.log("MongoDB Error!!!"))
+.catch(err => {console.log("MongoDB Error!!!"); console.log(err)})
 
 // For application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({extended: true}));
