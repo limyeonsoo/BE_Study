@@ -6,8 +6,10 @@
 const {Users} = require('../models/Users');
 
 let auth = (req, res, next) => {
+    console.log("in auth");
     let token = req.cookies.x_auth;
     Users.findByToken(token, (err,user) => {
+        console.log(user);
         if(err) throw err;
         if(!user) return res.json({
             isAuth:false,
@@ -17,7 +19,6 @@ let auth = (req, res, next) => {
         req.user = user;
         next(); //next가 없으면 middleware에서 끝.
     });
-    
 }
 
 module.exports = {auth};

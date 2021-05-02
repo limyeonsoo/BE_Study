@@ -82,6 +82,8 @@ app.post('/api/users/login', (req, res) => {
 
 app.get('/api/users/auth', auth , (req, res) => {
     // auth : middleware 를 거친 후.
+    console.log('/api/users/auth');
+    console.log(req.body);
     res.status(200).json({
         _id: req.user._id,
         isAdmin: req.user.role === 0?false : true,
