@@ -291,24 +291,160 @@ cross-origin-resource-sharing
     4. 캐쉬, 공유 데이터를 저장할 수 있다.
     5. 특정 url을 제한 할 수 있다.
 
-    # concurrently
+# concurrently
 
-    ## front server & back server 를 동시에 실행하기.
+## front server & back server 를 동시에 실행하기.
 
-    `"dev": "concurrently \"npm run backend\" \"npm run start --prefix client\""`
+`"dev": "concurrently \"npm run backend\" \"npm run start --prefix client\""`
 
-    npm run dev ⇒ 
+npm run dev ⇒ 
 
-    concurrently를 이용해서 실행 될 것.
+concurrently를 이용해서 실행 될 것.
 
-    1. npm run backend
-    2. npm run start   +   위치가  client/ 인 곳의 "start" 스크립트가 실행.
+1. npm run backend
+2. npm run start   +   위치가  client/ 인 곳의 "start" 스크립트가 실행.
 
-    # CSS Framework
+# CSS Framework
 
-    1. Material UI
-    2. React Bootstrap
-    3. Semantic UI
-    4. Ant Design
-    5. Materialize
-    6. etc...
+1. Material UI
+2. React Bootstrap
+3. Semantic UI
+4. Ant Design
+5. Materialize
+6. etc...
+
+# Redux
+
+1. redux
+2. react-redux
+3. redux-promise
+
+    ⇒ store 에 promise 타입의 액션을 전달해주기 위한 미들웨어.
+
+4. redux-chunk
+
+    ⇒ store 에 function 타입의 액션을 전달해주기 위한 미들웨어.
+
+```jsx
+import {applyMiddleware, createStore} from 'redux';
+import promiseMiddleware from 'redux-promise';
+import ReduxThunk from 'redux-thunk';
+
+const createStoreWithMiddleware = applyMiddleware(promiseMiddleware, ReduxThunk)(createStore);
+```
+
+# props.history.push
+
+/login,  /, /register 등  url을 변경할 수 있다.
+
+react-router-dom에 의해 사용할 수 있는 객체.
+
+[https://reactrouter.com/web/api/history](https://reactrouter.com/web/api/history)
+
+### Error
+
+이렇게 하면 props.history.push 가 undefined라고 한다.
+
+```jsx
+<Route exact path='/'>
+       <LandingPage/>
+</Route>
+```
+
+### Solve
+
+```jsx
+<Route exact path='/' component={Auth(LandingPage, null)} />
+```
+
+## withRouter 도 필요.
+
+`import {withRouter} from 'react-router-dom';`
+
+## react-router-dom history vs window.location (궁금증)
+
+Browser reload의 차이.
+
+history 는 reload 하지 않고,
+location은 reload 된다.
+
+# Auth
+
+HOC 기법을 이용한다.
+
+Auth를 확인하는 컴포넌트는 인증 된 사용자만 사용할 수 있는 컴포넌트를 가지고 있다.
+
+1. HOC 컴포넌트를 만들어준다.
+
+    Landing, Login, Register 각 페이지를 Auth로 감쌌다.
+
+    - option
+
+        null ⇒ 모든 유저 접근.
+
+        true ⇒ 인증된 유저 접근.
+
+        false ⇒ 인증안된 유저 접근.
+
+    ```jsx
+    export default function (SpecificComponent, option, adminRoute = null){
+        
+    		function AuthenticationCheck(props){
+            const dispatch = useDispatch();
+            useEffect(() => {
+                dispatch(auth())
+                    .then(res => {
+                        console.log(res);
+                        // // Not Loggin
+                        if(!res.payload.isAuth){
+                            if(option){ // option : true  ->  X
+                                props.history.push('/login');
+                            }
+                        }else{ // loggined
+                            if(adminRoute && !res.payload.isAdmin){
+                                props.history.push('/');
+                            }else{
+                                // logged in  -> login & register X
+                                if(option === false)
+                                    props.history.push('/');
+                            }
+                        }
+                    })
+            },[]);
+            return(
+                <SpecificComponent />
+            )
+        }
+        return AuthenticationCheck;
+    }
+    ```
+
+    ```jsx
+    <Router>
+        <Switch>
+          <Route exact path='/' component={Auth(LandingPage, null)} />
+          <Route path='/register' component={Auth(RegisterPage, false)} />
+          <Route path='/login' component={Auth(LoginPage, false)} />
+        </Switch>
+    </Router>
+    ```
+
+2. 인증 상태를 가져온다.
+
+    현재는 cookie의 token을 이용해서 확인 할 수 있다.
+
+    auth API는 JWT를 이용한 token이 있는지 확인하는 로직.
+
+    ```jsx
+    //dispatch(auth())
+
+    export function auth(){
+        const request = axios.get('/api/users/auth')
+            .then(res => res.data);
+        
+        return{
+            type:AUTH_USER,
+            payload: request
+        }
+    }
+    ```
