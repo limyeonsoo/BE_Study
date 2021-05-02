@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, {useState} from 'react';
 import {useDispatch} from 'react-redux';
-import loginUser from '../../../_actions/user_action';
+import { loginUser } from '../../../_actions/user_action';
 
 const LoginPage = (props) => {
     const dispatch = useDispatch();
@@ -23,16 +23,19 @@ const LoginPage = (props) => {
             password: password
         }
 
+        
+
         dispatch(loginUser(body))
             .then(res => {
                 if(res.payload.loginSuccess){
+                    //console.log(props);
+                    //console.log(props.history);
                     props.history.push('/')
+
                 }else{
                     alert('error');
                 }
             })
-
-        
     }
 
     return (

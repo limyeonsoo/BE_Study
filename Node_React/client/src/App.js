@@ -18,12 +18,12 @@ function App() {
           <Route exact path='/' component={LandingPage} />
           {/* <LandingPage/> */}
           {/* </Route> */}
-          <Route path='/register'>
-            <RegisterPage/>
-          </Route>
-          <Route path='/login'>
-            <LoginPage/>
-          </Route>
+          <Route path='/register' component={RegisterPage} />
+            {/* <RegisterPage/>
+          </Route> */}
+          <Route path='/login' component={LoginPage} />
+            {/* <LoginPage/>
+          </Route> */}
         </Switch>
       </div>
     </Router>
