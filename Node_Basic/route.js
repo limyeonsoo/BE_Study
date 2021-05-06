@@ -18,10 +18,10 @@ exports.route = (function(){
         if(typeof handlers[pathname][method] === 'function'){
             handlers[pathname][method](req, res, body);
         }else{
-            res.writeHead(404, {"Content-Type" : "text/palin"});
+            res.writeHead(404, {"Content-Type" : "text/plain"});
             res.write('pathname error');
             res.end();
         }
     }
     return route;
-})
+})();

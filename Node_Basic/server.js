@@ -40,7 +40,6 @@ var route = require('./route.js');
 
 function onRequest(req, res){
     var body = '';
-
     req.on('data', function(chunk){
         body += chunk;
     });
