@@ -1,4 +1,4 @@
-var Datasore = require('nedb');
+var Datastore = require('nedb');
 var db = new Datastore({ filename: './data/memo', autoload: true});
 var querystring = require('querystring');
 var url = require('url');
