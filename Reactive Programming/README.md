@@ -322,3 +322,62 @@ thenCancel()
 take(2)를 했을 때
 take는 Flux를 2개 만들고,
 upstream에 2개 지난 후 cancel을 날려서 종료함.
+
+## Reactor의 특징.
+
+### 쉽게 **구성** & **가독성**.
+
+→ 여러 비동기 Task를 쉽게 조작할 수 있다는 점.
+
+⇒ **가독성** + **유지보수성** + **재사용성**에 연결됨.
+
+( 콜백지옥을 생각하면 쉽게 느낄 수 있음 )
+
+### 연산자로 조작하는 **플로우.**
+
+→ 마치 컨베이어 벨트와 같다.
+공급원(Publisher)가 제공하는 원료를 소비자(Subscriber)에게 전달하도록...
+
+이때, 중간에 결함이 생기더라도 흐름을 제어하기 쉽다.
+
+Publisher에서 시작 → 동작 → 동작 → 동작 → ... → Subscriber에서 처리 종료.
+
+![Untitled](Reactive%20Programming%2087d596702fca451ba9d5891edfada2ad/Untitled%204.png)
+
+### Subscribe
+
+→ subscribe()를 해야만 데이터가 공급된다.
+내부적으로는 Subscriber의 request가 upstream으로 전파되어 Publisher로 전달됨.
+
+![Untitled](Reactive%20Programming%2087d596702fca451ba9d5891edfada2ad/Untitled%205.png)
+
+### Backpressure (컨슈머의 입장 고려)
+
+→ 하위 워크스테이션의 처리가 느릴 때 : backpressure를 피드백으로 upstream에게 전파.
+
+request(n) : 최대 n개를 처리할 준비가 되었다.
+
+⭐ **⇒ 즉, push-pull 하이브리드 모델이라고 할 수 있다.
+upstream에 데이터가 없다면 생산되었을 때 upstream이 push
+upstream에 데이터가 잇다면 downstream이 n개를 pull**
+
+### 높은 수준 추상화.
+
+Hot & Cold
+Reactive Stream이 Subscriber에게 반응하는 방식에 대한 구분.
+
+- Cold
+    
+    시퀀스가 Subscriber마다 새로 시작.
+    데이터에 HTTP 호출 래핑하고 있다면, 구독할 때 마다 HTTP 요청을 새로 만든다.
+    
+- Hot
+    
+    매번 만들지 않는다. → 나중에 구독한 구독자는 구독 이후 생산 신호를 받음.
+    * 일부 Hot은 전체 or 일부 캐시 / 이전 데이터 재사용.
+    * 구독자가 없을 때도 발생할 수 있음.
+    
+    ex) Mono.just()
+    
+
+[Advanced Features and Concepts](https://godekdls.github.io/Reactor%20Core/advancedfeaturesandconcepts/#92-hot-versus-cold)
