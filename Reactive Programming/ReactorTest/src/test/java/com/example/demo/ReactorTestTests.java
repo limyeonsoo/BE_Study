@@ -7,6 +7,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 import reactor.test.StepVerifierOptions;
+import reactor.test.publisher.PublisherProbe;
 import reactor.test.publisher.TestPublisher;
 import reactor.util.context.Context;
 
@@ -103,6 +104,46 @@ class ReactorTestTests {
                 .verifyComplete();
     }
 
+    @Test
+    void testPublisherCreateNoncompliant() {
+//        TestPublisher<Integer> testPublisher = TestPublisher.<Integer> create();
+//        TestPublisher<Integer> testPublisherNon = TestPublisher.createNoncompliant(TestPublisher.Violation.REQUEST_OVERFLOW);
+//
+//        StepVerifier.create(testPublisher.flux())
+//                .thenRequest(4)
+//                .then(() -> testPublisher.emit(10, 11, 12))
+//                .expectNext(10, 11, 12)
+//                .verifyComplete();
+
+        TestPublisher<Integer> publisher = TestPublisher.create();
+//        TestPublisher<String> publisher = TestPublisher.createNoncompliant(TestPublisher.Violation.REQUEST_OVERFLOW);
+        StepVerifier.create(publisher, 2)
+                .thenRequest(Long.MAX_VALUE - 2)
+                .then(() -> publisher.emit(10, 11, 12))
+                .expectNext(10, 11, 12)
+                .expectComplete()
+                .verify();
+    }
+
+    private Mono<String> executeCommand(String command) {
+        return Mono.just(command + " DONE");
+    }
+    public Mono<Void> processOrFallback(Mono<String> commandSource, Mono<Void> doWhenEmpty) {
+        return commandSource
+                .flatMap(command -> executeCommand(command).then())
+                .switchIfEmpty(doWhenEmpty);
+    }
+
+    @Test
+    void testPublisherProbe() {
+        PublisherProbe<Void> probe = PublisherProbe.empty();
+        StepVerifier.create(processOrFallback(Mono.empty(), probe.mono()))
+                .verifyComplete();
+
+        probe.assertWasSubscribed();
+        probe.assertWasRequested();
+        probe.assertWasNotCancelled();
+    }
 
     /*
 
