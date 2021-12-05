@@ -16,6 +16,10 @@
 
 thread-safety
 
+# Testing (StepVerifier)
+
+[Testing](Reactive%20Programming%20a9789f8d9db949be8f8519accbbf1e4e/Testing%20da7b0f8ef1dd4d0a9746002ca3d95caf.md)
+
 ## 프로그램의 성능을 끌어올리는 방법
 
 1. 더 많은 Thread, 더 좋은 HW, resource
@@ -123,7 +127,7 @@ ii. onErrorResume(cacheService.cachedFavoritesFor(userId)
 
 **Publicsher를 기반으로 low-level이 아니라 high-level에서 large한 범위를 커버하기를 목표로 함.**
 
-![Untitled](Reactive%20Programming%2087d596702fca451ba9d5891edfada2ad/Untitled.png)
+![Untitled](Reactive%20Programming%20a9789f8d9db949be8f8519accbbf1e4e/Untitled.png)
 
 publisher : 데이터를 보내주는 사람. → producs하면서 push events 함.
 
@@ -238,7 +242,7 @@ flatmap, map
     
     3개씩 출력되고 순서를 보장받지 못함.
     
-    ![Untitled](Reactive%20Programming%2087d596702fca451ba9d5891edfada2ad/Untitled%201.png)
+    ![Untitled](Reactive%20Programming%20a9789f8d9db949be8f8519accbbf1e4e/Untitled%201.png)
     
 2. concatMap
     
@@ -256,7 +260,7 @@ flatmap, map
     1개씩 출력되고 순서는 보장됨. 약 10초
     → parelle()의 효과를 전혀 볼 수 없음.
     
-    ![Untitled](Reactive%20Programming%2087d596702fca451ba9d5891edfada2ad/Untitled%202.png)
+    ![Untitled](Reactive%20Programming%20a9789f8d9db949be8f8519accbbf1e4e/Untitled%202.png)
     
 3. flatMapSequential
     
@@ -273,7 +277,7 @@ flatmap, map
     
     A, B가 출력됨가 동시에 CDEFGHI가 동시에 뜸. 약 3초
     
-    ![Untitled](Reactive%20Programming%2087d596702fca451ba9d5891edfada2ad/Untitled%203.png)
+    ![Untitled](Reactive%20Programming%20a9789f8d9db949be8f8519accbbf1e4e/Untitled%203.png)
     
 
 ## mergeWith, concatWith, Flux.concatWith
@@ -342,14 +346,14 @@ upstream에 2개 지난 후 cancel을 날려서 종료함.
 
 Publisher에서 시작 → 동작 → 동작 → 동작 → ... → Subscriber에서 처리 종료.
 
-![Untitled](Reactive%20Programming%2087d596702fca451ba9d5891edfada2ad/Untitled%204.png)
+![Untitled](Reactive%20Programming%20a9789f8d9db949be8f8519accbbf1e4e/Untitled%204.png)
 
 ### Subscribe
 
 → subscribe()를 해야만 데이터가 공급된다.
 내부적으로는 Subscriber의 request가 upstream으로 전파되어 Publisher로 전달됨.
 
-![Untitled](Reactive%20Programming%2087d596702fca451ba9d5891edfada2ad/Untitled%205.png)
+![Untitled](Reactive%20Programming%20a9789f8d9db949be8f8519accbbf1e4e/Untitled%205.png)
 
 ### Backpressure (컨슈머의 입장 고려)
 
@@ -381,3 +385,308 @@ Reactive Stream이 Subscriber에게 반응하는 방식에 대한 구분.
     
 
 [Advanced Features and Concepts](https://godekdls.github.io/Reactor%20Core/advancedfeaturesandconcepts/#92-hot-versus-cold)
+
+## Flux: Asynchronous Sequene of 0-N Items
+
+![Untitled](Reactive%20Programming%20a9789f8d9db949be8f8519accbbf1e4e/Untitled%206.png)
+
+0-N개 비동기 시퀀스 생산하는 `표준 Publisher<T>`
+
+→ **완료 or 에러** 신호에 의해 종료.
+
+`onNext`   `onComplete`   `onError`  를 구독자가 이용.
+
+onNext없이 onComplete만 잇다면 → **비어있는 유한한 시퀀스**
+onComplete제거 시 → **비어있는 무한한 시퀀스**
+Flux.interval(Duration)이용 시 → **일정 시간 값 방출하는 무한한 Flux<Long>** 
+
+## Mono: Asynchronous 0-1 Result
+
+![Untitled](Reactive%20Programming%20a9789f8d9db949be8f8519accbbf1e4e/Untitled%207.png)
+
+`onComplete`   `onError`  신호에 종료되는 1개 아이템 생산 `Mono<T>`
+
+Flux에서 지원하는 모든 연산자가 있진 않다.
+
+단, 특정 연산자를 이용하여 다른 Publisher와 합쳐서 Flux로 전환 가능.
+
+`Mono#concatWith(Publisher)`는 Flux를 반환함.
+
+Mono<Void>를 사용하면 → **값은 없고 완료 개념만 있는 (Runnable) 비동기 처리가 가능.**
+
+## Create Flux or Mono and subscribe to It
+
+### <String> 시퀀스
+
+1. just를 이용한 Flux
+    
+    ```java
+    Flux<String> seq1 = Flux.just("foo", "bar", "foobar");
+    ```
+    
+2. collections를 이용한 Flux
+    
+    ```java
+    List<String> iterale = Arrays.asList("foo", "bar", "foobar");
+    Flux<String> seq2 = Flux.fromIterable(iterable);
+    ```
+    
+3. 팩토리 메소드를 사용하는 방법
+    
+    ```java
+    Mono<String> noData = Mono.empty();
+    // 값이 없어도 제네릭 타입이 필요함!
+    
+    Mono<String> data = Mono.just("foo");
+    
+    Flux<Integer> numbersFromFiveToSeven = Flux.range(5, 3);
+    ```
+    
+
+### <subscribe>: Java8의 람다 이용
+
+```java
+subscribe(); // (1)
+
+subscribe(Consumer<? super T> consumer); // (2)
+
+subscribe(Consumer<? super T> consumer,
+          Consumer<? super Throwable> errorConsumer); // (3)
+
+subscribe(Consumer<? super T> consumer,
+          Consumer<? super Throwable> errorConsumer,
+          Runnable completeConsumer); // (4)
+
+subscribe(Consumer<? super T> consumer,
+          Consumer<? super Throwable> errorConsumer,
+          Runnable completeConsumer,
+          Consumer<? super Subscription> subscriptionConsumer); // (5)
+```
+
+1. 구독하고 시퀀스를 트리거 한다.
+2. 생산된 데이터에 무언가를 한다.
+3. 데이터 처리 + 에러 처리도 한다.
+4. 데이터 + 에러 처리를 하면서, 성공적으로 완료됐을 때 특정 코드도 실행한다.
+5. 데이터 + 에러 처리 + 성공 처리를 하면서, subscribe호출로 생성되는 subscription으로 무언가를 한다.
+
+### subscribe의 5가지 example
+
+1. 인자 없는 기본 메소드
+    
+    ```java
+    Flux<Integer> ints = Flux.range(1,3);
+    ints.subscribe();
+    ```
+    
+    Flux는 값 3개를 생산해낸다. (구독시점에)
+    
+2. 값에 대한 핸들러
+    
+    ```java
+    ints.subscribe(i → System.out.println(i)));
+    ```
+    
+    - 구독 시점에 값을 볼 수 있다.
+3. 에러 발생 핸들러
+    
+    ```java
+    Flux<Integer> ints = Flux.range(1, 4)
+    	.map(i -> {
+    			if (i<=3) return i;
+    			throw new RuntimeException("Got to 4");
+    	});
+    ints.subscribe(i -> System.out.println(i),          // (1)
+    	error -> System.err.pritnln("Error: " + error));  // (2)
+    ```
+    
+    - Flux는 4개를 생산한다.
+    - map을 이용해 각각 다른 행위를 시켜주는데,
+    값이 4일 때 error를 발생시킨다.
+    - 정상 값일 때는 (1)로 subscribe()
+    에러 값일 때는 (2)로 subscribe() 처리를 할 수 있다.
+4. 에러 핸들러 + 완료 핸들러
+    
+    ```java
+    Flux<Integer> ints = Flux.range(1,4);
+    ints.subscribe(i -> System.out.println(i),         // (1)
+    	error -> System.err.println("Error " + error),   // (2)
+    	() -> System.out.println("Done"));               // (3)
+    ```
+    
+    - 구독, 에러, 완료 각각 (1), (2), (3) 핸들러로 컨트롤 할 수 있다.
+    - ⭐**단, Error와 Complete는 베타적인 관계이므로, 둘 다 받을 수는 없다.**⭐
+    - 완료 콜백 (3)은 입력이 없기 때문에 빈 괄호로 표현. (Runnable 인터페이스의 run과 동일)
+5. Consumer<Subscription>을 받는 메소드
+    
+    Subscription으로 무언가를 해야만한다. 아니면 Flux는 멈춰 있다.
+    
+    request(long) : pull
+    
+    cancel() : 구독 취소
+    
+    ```java
+    Flux<Integer> ints = Flux.range(1, 4);
+    ints.subscribe(i -> System.out.println(i),
+        error -> System.err.println("Error " + error),
+        () -> System.out.println("Done"),
+        sub -> sub.request(10));
+    ```
+    
+    - 구독을 시작하면 `subscription`을 받는다.
+    - request(10)을 했기 때문에 10개를 받는다.
+    단, Flux에 4개가 있으므로 4개를 방출한다.
+    
+
+### Cancel subscribe() with Disposable
+
+람다 기반 `subscribe()`메소드는 모두 `Disposable 타입`을 리턴한다.
+
+`Disposable`은 구독취소할 수 있음을 의미. (`dispose()` 메소드 이용)
+
+사용 예시)
+
+사용자가 UI에서 새 요청을 한다면? 
+
+→ Disposable 래퍼를 이용하여 기존 것을 취소 후 다시 생산하는 방식을 이용할 수 있다는 말.
+
+### BaseSubscriber
+
+subscribe 메소드에 람다 대신 (직접 조합, 로직)
+→ Subscriber를 넘길 수 있다. (이미 무언가를 갖추고 있는)
+
+확장가능한 BaseSubscriber
+
+- 일회용 인스턴스
+두 번 사용(다른 Publisher를 구독)하면 안된다는 규칙. (Reactive Stream: onNext()는 병렬로 절대 호출해선 안됨.)
+
+< 커스텀 해보기 >
+
+- 요청할 양을 커스텀하기 위해 BaseSubscriber를 상속.
+- subscribe() 시점.
+⇒ hookOnSubscribe(Subscription subscription){ }
+- onNext() 시점.
+⇒ hookOnNext(T value) { }
+
+```java
+package io.projectreactor.samples;
+
+import org.reactivestreams.Subscription;
+
+import reactor.core.publisher.BaseSubscriber;
+
+public class SampleSubscriber<T> extends BaseSubscriber<T> {
+
+	public void hookOnSubscribe(Subscription subscription) {
+		System.out.println("Subscribed");
+		request(1);
+	}
+
+	public void hookOnNext(T value) {
+		System.out.println(value);
+		request(1);
+	}
+}
+```
+
+이 외에 
+
+- cancel()
+- requestUnbounded(): (언바운드 모드 전환)
+- hookOnComplete()
+- hookOnError()
+- hookOnCancel()
+- hookFinally()
+
+```java
+SampleSubscriber<Integer> ss = new SampleSubscriber<Integer>();
+Flux<Integer> ints = Flux.range(1, 4);
+ints.subscribe(i -> System.out.println(i),
+    error -> System.err.println("Error " + error),
+    () -> {System.out.println("Done");},
+    s -> s.request(10));
+ints.subscribe(ss);
+```
+
+- 커스텀된 Subscriber ss를 subscribe() 했다.
+
+< 출력 결과 >
+
+```java
+Subscribed
+1
+2
+3
+4
+```
+
+### Backpressure ways to reshape requests
+
+request를 보냄으로써 구현.
+
+```java
+Flux.range(1, 10)
+    .doOnRequest(r -> System.out.println("request of " + r))
+    .subscribe(new BaseSubscriber<Integer>() {
+
+      @Override
+      public void hookOnSubscribe(Subscription subscription) {
+        request(1);
+      }
+
+      @Override
+      public void hookOnNext(Integer integer) {
+        System.out.println("Cancelling after having received " + integer);
+        cancel();
+      }
+    });
+
+request of 1
+Cancelling after having received 1
+```
+
+BaseSubsriber의 2가지 메소드를 재정의.
+
+## 시퀀스를 생성하는 방법 (어려운거)
+
+`generate`, `create`, `push`, `handle`
+
+- generate(): Synchronous
+- create() : Asynchronous & multi-thread
+- push() : Asynchronous & single-thread
+
+### generate( Supplier<S>, BiFunction<S, SynchrounousSink<T>, S>, Consumer<S> )
+
+< 단순 예제 >
+
+```java
+Flux<String> flux = Flux.generate(
+      AtomicLong::new,
+			// () -> 0,
+      (state, sink) -> {
+          long i = state.getAndIncrement();
+          sink.next("3 x " + i + " = " + 3*i);
+          if (i == 10) sink.complete();
+          return state;
+      });
+```
+
+< 상태 객체가 반환해야할 리소스가 있을 때 >
+
+```java
+Flux<String> flux = Flux.generate(
+    AtomicLong::new,
+    (state, sink) -> { // (1)
+        long i = state.getAndIncrement(); // (2)
+        sink.next("3 x " + i + " = " + 3*i);
+        if (i == 10) sink.complete();
+        return state; // (3)
+    }, (state) -> System.out.println("state: " + state)); // (4)
+```
+
+![Untitled](Reactive%20Programming%20a9789f8d9db949be8f8519accbbf1e4e/Untitled%208.png)
+
+⁉️ AtomicLong은 Long wrapper 클래스
+thread-safe 해서 multi-thread에서 synchronized없이 사용 가능.
+동시성 보장.
+
+### create( Consumer<? super Fluxsink<T>> emitter, backpressure )
