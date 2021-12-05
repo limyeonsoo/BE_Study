@@ -41,7 +41,8 @@ Flux에서
 3. boom이라는 에러를 생산한다.
 4. 구독한 다음 검증한다.
 
-![Untitled](Reactive Programming a9789f8d9db949be8f8519accbbf1e4e/Testing da7b0f8ef1dd4d0a9746002ca3d95caf/Untitled.png)
+![Untitled](Testing%20165642b37e544ec0aefdf4f2951e1040/Untitled.png)
+
 ### 테스트:
 
 1. thing1, thing2가 있는 Flux를 정의한다.
@@ -87,7 +88,7 @@ verify(Duration)
 
 ## ❓ verify() & verifyComplete() 차이
 
-![Untitled](Reactive Programming a9789f8d9db949be8f8519accbbf1e4e/Testing da7b0f8ef1dd4d0a9746002ca3d95caf/Untitled 1.png)
+![Untitled](Testing%20165642b37e544ec0aefdf4f2951e1040/Untitled%201.png)
 
 ## Test를 실패하게 만든 expectation 스텝 찾기.
 
@@ -97,14 +98,14 @@ verify(Duration)
     실패 시 에러 메세지
     단, 마지막 expectation과 verify에는 사용 X
     
-    ![Untitled](Reactive Programming a9789f8d9db949be8f8519accbbf1e4e/Testing da7b0f8ef1dd4d0a9746002ca3d95caf/Untitled 2.png)
+    ![Untitled](Testing%20165642b37e544ec0aefdf4f2951e1040/Untitled%202.png)
     
 2. StepVerifierOptions.create().scenarioName(String)
     
     이 옵션으로 StepVerifier를 만들면 scenarioName 메소드로 전체 시나리오 이름 지정.
     이 이름이 assertion 에러 메세지에 사용.
     
-    ![Untitled](Reactive Programming a9789f8d9db949be8f8519accbbf1e4e/Testing da7b0f8ef1dd4d0a9746002ca3d95caf/Untitled 3.png)
+    ![Untitled](Testing%20165642b37e544ec0aefdf4f2951e1040/Untitled%203.png)
     
 
 ## 6.2 Manipulating Time
@@ -120,7 +121,7 @@ verify(Duration)
 → StepVerifier.Assertions 객체를 반환.
 이 객체를 이용해서 성공적으로 끝난 시나리오의 상태를 검증할 수 있음(내부에서 verify()도 호출함)
 
-![Untitled](Reactive Programming a9789f8d9db949be8f8519accbbf1e4e/Testing da7b0f8ef1dd4d0a9746002ca3d95caf/Untitled 4.png)
+![Untitled](Testing%20165642b37e544ec0aefdf4f2951e1040/Untitled%204.png)
 
 ## 6.4 Testing the Context
 
@@ -168,9 +169,9 @@ StepVerifier.create(Mono.just(1).map(i -> i + 10),
 
 Thread 지역변수. set, get, remove “안정적임"But, ThreadLocal에 의존하면 리액티브 프로그래밍에 실패 할 수 있음.
 
-![Untitled](Reactive Programming a9789f8d9db949be8f8519accbbf1e4e/Testing da7b0f8ef1dd4d0a9746002ca3d95caf/Untitled 5.png)
+![Untitled](Testing%20165642b37e544ec0aefdf4f2951e1040/Untitled%205.png)
 
-![Untitled](Reactive Programming a9789f8d9db949be8f8519accbbf1e4e/Testing da7b0f8ef1dd4d0a9746002ca3d95caf/Untitled 6.png)
+![Untitled](Testing%20165642b37e544ec0aefdf4f2951e1040/Untitled%206.png)
 
 ## 6.5 Manually Emitting with TestPublisher
 
@@ -186,7 +187,7 @@ TestPublisher 클래스 사용.
 - complete(): onComplete 신호와 함께 종료.
 - error(Throwable): onError 신호와 함께 종료.
 
-![Untitled](Reactive Programming a9789f8d9db949be8f8519accbbf1e4e/Testing da7b0f8ef1dd4d0a9746002ca3d95caf/Untitled 7.png)
+![Untitled](Testing%20165642b37e544ec0aefdf4f2951e1040/Untitled%207.png)
 
 < 팩토리 메소드 이용하여 TestPublisher 생성 >
 
@@ -231,4 +232,4 @@ TestPublisher는 구독 이후 내부 상태 값을 가지고 있어서 assert* 
 - 실제 데이터 요청했는지 확인.
 - 취소 여부 확인.
 
-![Untitled](Reactive Programming a9789f8d9db949be8f8519accbbf1e4e/Testing da7b0f8ef1dd4d0a9746002ca3d95caf/Untitled 8.png)
+![Untitled](Testing%20165642b37e544ec0aefdf4f2951e1040/Untitled%208.png)
