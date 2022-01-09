@@ -16,6 +16,9 @@ public class ScheduledTasks {
 
     @Scheduled(fixedRate = 5000)
     public void reportCurrentTime() throws InterruptedException {
-        log.info("time is now {}", dateFormat.format(new Date()));
+        log.error("before sleep time is now {}", dateFormat.format(new Date()));
+        Thread.sleep(6000);
+        log.info("after sleep time is now {}", dateFormat.format(new Date()));
+        log.info("\n");
     }
 }
